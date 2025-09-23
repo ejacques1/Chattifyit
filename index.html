@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chattify IT - Turn Your ChatGPT Chatbots Into Paid Subscriptions</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background-color: #fafafa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .logo .highlight {
+            color: #00c896;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: #1a1a1a;
+        }
+
+        .btn {
+            background: #00c896;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #00b085;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00c896;
+            border: 2px solid #00c896;
+        }
+
+        .btn-secondary:hover {
+            background: #00c896;
+            color: white;
+        }
+
+        /* Landing Page */
+        .landing {
+            background: white;
+            padding: 4rem 0;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .value-props {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .value-prop {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .value-prop .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00c896;
+        }
+
+        .signup-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e5e5e5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00c896;
+            box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.1);
+        }
+
+        /* App Layout */
+        .app-layout {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-layout.active {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e5e5e5;
+            padding: 2rem 0;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.75rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #f8f9fa;
+            color: #00c896;
+            border-right: 3px solid #00c896;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            background: #fafafa;
+        }
+
+        .page {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00c896;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .value-props {
+                flex-direction: column;
+            }
+
+            .app-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .main-content {
+                order: 1;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                Chattify <span class="highlight">IT</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link" id="loginBtn">Log in</a>
+                <a href="#" class="btn" id="getStartedBtn">Get started</a>
+                <a href="#" class="nav-link hidden" id="logoutBtn">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Landing Page -->
+    <main class="landing" id="landingPage">
+        <div class="container">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Turn Your ChatGPT Chatbots Into Paid Subscriptions</h1>
+                    <p class="subtitle">
+                        Connect your ChatGPT chatbots to Chattify IT's paywall platform and transform them into subscription businesses. Finally get paid for the knowledge you've spent years building.
+                    </p>
+                    
+                    <div class="value-props">
+                        <div class="value-prop">
+                            <div class="number">$19.99</div>
+                            <div>Monthly for unlimited paywalls</div>
+                        </div>
+                        <div class="value-prop">
+                            <div class="number">70%</div>
+                            <div>Revenue share to you</div>
+                        </div>
+                        <div class="value-prop">
+                            <div class="number">30 days</div>
+                            <div>Payout frequency</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="signup-form">
+                    <h3 style="margin-bottom: 1rem;">Get Started Today</h3>
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            Create Account - Start Free
+                        </button>
+                    </form>
+                    
+                    <div style="text-align: center; margin-top: 1rem; color: #666;">
+                        Already have an account? <a href="#" id="showLoginForm" style="color: #00c896;">Log in</a>
+                    </div>
+
+                    <!-- Login Form (Hidden by default) -->
+                    <form id="loginForm" class="hidden">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" name="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" name="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">
+                            Log In
+                        </button>
+                    </form>
+                    
+                    <div id="loginToggle" class="hidden" style="text-align: center; margin-top: 1rem; color: #666;">
+                        Need an account? <a href="#" id="showSignupForm" style="color: #00c896;">Sign up</a>
+                    </div>
+
+                    <div id="authError" class="error hidden"></div>
+                    <div id="authSuccess" class="success hidden"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- App Layout -->
+    <div class="app-layout" id="appLayout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <li><a href="#" class="nav-item active" data-page="profile">Account Profile</a></li>
+                <li><a href="#" class="nav-item" data-page="dashboard">Paywall Dashboard</a></li>
+                <li><a href="#" class="nav-item" data-page="create">Create Paywall</a></li>
+                <li><a href="#" class="nav-item" data-page="instructions">Installation Guide</a></li>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Account Profile Page -->
+            <div class="page active" id="profilePage">
+                <div class="page-header">
+                    <h1 class="page-title">Account Profile</h1>
+                    <p class="page-subtitle">Set up your business information and payout preferences</p>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="businessName">Business Name *</label>
+                            <input type="text" id="businessName" name="businessName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactName">Contact Name *</label>
+                            <input type="text" id="contactName" name="contactName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessAddress">Business Address *</label>
+                        <textarea class="textarea" id="businessAddress" name="businessAddress" required placeholder="Enter your complete business address"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payoutEmail">PayPal Email for Payouts (Optional)</label>
+                        <input type="email" id="payoutEmail" name="payoutEmail" placeholder="Add this anytime before your first payout">
+                        <small style="color: #666; margin-top: 0.5rem; display: block;">
+                            You can add your payout information later, but it's required before receiving your first payment.
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn">Save Profile</button>
+                </form>
+
+                <div id="profileError" class="error hidden"></div>
+                <div id="profileSuccess" class="success hidden"></div>
+            </div>
+
+            <!-- Paywall Dashboard -->
+            <div class="page" id="dashboardPage">
+                <div class="page-header">
+                    <h1 class="page-title">Paywall Dashboard</h1>
+                    <p class="page-subtitle">Manage your ChatGPT paywall subscriptions</p>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPaywalls">0</div>
+                        <div class="stat-label">Total Paywalls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activePaywalls">0</div>
+                        <div class="stat-label">Active Paywalls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">$19.99</div>
+                        <div class="stat-label">Monthly Platform Fee</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2>Your Paywalls</h2>
+                    <button class="btn" id="createPaywallBtn">Create New Paywall</button>
+                </div>
+
+                <div id="paywallsTable">
+                    <div class="loading">Loading your paywalls...</div>
+                </div>
+            </div>
+
+            <!-- Create Paywall Page -->
+            <div class="page" id="createPage">
+                <div class="page-header">
+                    <h1 class="page-title">Create New Paywall</h1>
+                    <p class="page-subtitle">Set up a paywall for your ChatGPT chatbot</p>
+                </div>
+
+                <form id="createPaywallForm">
+                    <div class="form-group">
+                        <label for="paywallName">Paywall Name *</label>
+                        <input type="text" id="paywallName" name="paywallName" required placeholder="e.g., My Marketing Assistant GPT">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paywallDescription">Description *</label>
+                        <textarea class="textarea" id="paywallDescription" name="paywallDescription" required placeholder="Describe what your ChatGPT chatbot does and the value it provides"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="monthlyPrice">Monthly Price (USD) *</label>
+                            <input type="number" id="monthlyPrice" name="monthlyPrice" required min="1" step="0.01" placeholder="29.99">
+                        </div>
+                        <div class="form-group">
+                            <label for="freeTrialDays">Free Trial Duration (Days)</label>
+                            <input type="number" id="freeTrialDays" name="freeTrialDays" min="0" max="30" placeholder="7">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Create Paywall</button>
+                    <button type="button" class="btn btn-secondary" id="cancelCreate" style="margin-left: 1rem;">Cancel</button>
+                </form>
+
+                <div id="createError" class="error hidden"></div>
+                <div id="createSuccess" class="success hidden"></div>
+            </div>
+
+            <!-- Installation Instructions -->
+            <div class="page" id="instructionsPage">
+                <div class="page-header">
+                    <h1 class="page-title">Installation Instructions</h1>
+                    <p class="page-subtitle">Connect your paywall to your existing ChatGPT chatbot</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                    <h3 style="color: #00c896; margin-bottom: 1rem;">Step-by-Step Integration Guide</h3>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Step 1: Get Your Paywall Link</h4>
+                        <p style="margin-bottom: 1rem;">After creating a paywall, you'll receive a unique paywall URL that looks like:</p>
+                        <code style="background: white; padding: 0.5rem; border-radius: 4px; display: block;">
+                            https://chattifyit.com/paywall/[your-paywall-id]
+                        </code>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Step 2: Update Your ChatGPT Instructions</h4>
+                        <p style="margin-bottom: 1rem;">Add this text to the beginning of your ChatGPT's custom instructions:</p>
+                        <div style="background: white; padding: 1rem; border-radius: 4px; border-left: 4px solid #00c896;">
+                            <p><strong>Important:</strong> Before providing any responses, users must first subscribe at [YOUR PAYWALL URL]. If a user hasn't subscribed, direct them to visit the subscription link first.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Step 3: Test Your Integration</h4>
+                        <ol style="margin-left: 2rem;">
+                            <li style="margin-bottom: 0.5rem;">Visit your ChatGPT in a private/incognito browser window</li>
+                            <li style="margin-bottom: 0.5rem;">Try to use the chatbot without subscribing first</li>
+                            <li style="margin-bottom: 0.5rem;">Verify it directs you to your paywall</li>
+                            <li style="margin-bottom: 0.5rem;">Complete a test subscription to ensure the flow works</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Step 4: Promote Your Paywall</h4>
+                        <ul style="margin-left: 2rem;">
+                            <li style="margin-bottom: 0.5rem;">Share your paywall link on social media</li>
+                            <li style="margin-bottom: 0.5rem;">Add it to your website or bio links</li>
+                            <li style="margin-bottom: 0.5rem;">Include it in email signatures</li>
+                            <li style="margin-bottom: 0.5rem;">Mention it in relevant communities</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #e8f5e8; padding: 1rem; border-radius: 4px; border-left: 4px solid #00c896;">
+                        <h4 style="color: #155724; margin-bottom: 0.5rem;">💡 Pro Tip</h4>
+                        <p style="color: #155724; margin: 0;">Create a compelling description and set an appropriate price point. Users are willing to pay for valuable, specialized knowledge that saves them time!</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="btn" id="backToDashboard">Back to Dashboard</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // Replace with your actual Supabase URL
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Replace with your actual anon key
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Global state
+        let currentUser = null;
+        let currentPage = 'profile';
+
+        // DOM elements
+        const landingPage = document.getElementById('landingPage');
+        const appLayout = document.getElementById('appLayout');
+        const signupForm = document.getElementById('signupForm');
+        const loginForm = document.getElementById('loginForm');
+        const profileForm = document.getElementById('profileForm');
+        const createPaywallForm = document.getElementById('createPaywallForm');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is already logged in
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showApp();
+                await loadUserProfile();
+                await loadPaywalls();
+            }
+
+            setupEventListeners();
+        });
+
+        // Event listeners
+        function setupEventListeners() {
+            // Auth forms
+            signupForm.addEventListener('submit', handleSignup);
+            loginForm.addEventListener('submit', handleLogin);
+            
+            // Form toggles
+            document.getElementById('showLoginForm').addEventListener('click', showLoginForm);
+            document.getElementById('showSignupForm').addEventListener('click', showSignupForm);
+            document.getElementById('loginBtn').addEventListener('click', showLoginForm);
+            document.getElementById('getStartedBtn').addEventListener('click', () => {
+                document.getElementById('signupForm').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = e.target.dataset.page;
+                    navigateToPage(page);
+                });
+            });
+
+            // Forms
+            profileForm.addEventListener('submit', handleProfileSubmit);
+            createPaywallForm.addEventListener('submit', handleCreatePaywall);
+
+            // Buttons
+            document.getElementById('createPaywallBtn').addEventListener('click', () => navigateToPage('create'));
+            document.getElementById('cancelCreate').addEventListener('click', () => navigateToPage('dashboard'));
+            document.getElementById('backToDashboard').addEventListener('click', () => navigateToPage('dashboard'));
+        }
+
+        // Authentication functions
+        async function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                
+                if (error) throw error;
+
+                if (data.user) {
+                    showSuccess('Account created successfully! Please check your email to verify your account.');
+                    currentUser = data.user;
+                    showApp();
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                
+                if (error) throw error;
+
+                currentUser = data.user;
+                showApp();
+                await loadUserProfile();
+                await loadPaywalls();
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await supabase.auth.signOut();
+                currentUser = null;
+                showLanding();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Profile functions
+        async function handleProfileSubmit(e) {
+            e.preventDefault();
+            
+            const profileData = {
+                user_id: currentUser.id,
+                business_name: document.getElementById('businessName').value,
+                contact_name: document.getElementById('contactName').value,
+                business_address: document.getElementById('businessAddress').value,
+                payout_email: document.getElementById('payoutEmail').value || null
+            };
+
+            try {
+                const { error } = await supabase
+                    .from('accounts')
+                    .upsert(profileData);
+
+                if (error) throw error;
+
+                showSuccessMessage('profileSuccess', 'Profile saved successfully!');
+            } catch (error) {
+                showErrorMessage('profileError', error.message);
+            }
+        }
+
+        async function loadUserProfile() {
+            try {
+                const { data, error } = await supabase
+                    .from('accounts')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                if (data) {
+                    document.getElementById('businessName').value = data.business_name || '';
+                    document.getElementById('contactName').value = data.contact_name || '';
+                    document.getElementById('businessAddress').value = data.business_address || '';
+                    document.getElementById('payoutEmail').value = data.payout_email || '';
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Paywall functions
+        async function handleCreatePaywall(e) {
+            e.preventDefault();
+            
+            const paywallData = {
+                user_id: currentUser.id,
+                name: document.getElementById('paywallName').value,
+                description: document.getElementById('paywallDescription').value,
+                monthly_price: parseFloat(document.getElementById('monthlyPrice').value),
+                free_trial_days: parseInt(document.getElementById('freeTrialDays').value) || 0,
+                status: 'active',
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { error } = await supabase
+                    .from('paywalls')
+                    .insert(paywallData);
+
+                if (error) throw error;
+
+                showSuccessMessage('createSuccess', 'Paywall created successfully!');
+                createPaywallForm.reset();
+                
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    navigateToPage('dashboard');
+                    loadPaywalls();
+                }, 1500);
+            } catch (error) {
+                showErrorMessage('createError', error.message);
+            }
+        }
+
+        async function loadPaywalls() {
+            try {
+                const { data, error } = await supabase
+                    .from('paywalls')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                displayPaywalls(data || []);
+                updateStats(data || []);
+            } catch (error) {
+                console.error('Error loading paywalls:', error);
+                document.getElementById('paywallsTable').innerHTML = '<div class="error">Error loading paywalls</div>';
+            }
+        }
+
+        function displayPaywalls(paywalls) {
+            const tableContainer = document.getElementById('paywallsTable');
+            
+            if (paywalls.length === 0) {
+                tableContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <h3>No paywalls created yet</h3>
+                        <p>Create your first paywall to start monetizing your ChatGPT chatbots!</p>
+                        <button class="btn" onclick="navigateToPage('create')" style="margin-top: 1rem;">Create Your First Paywall</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${paywalls.map(paywall => `
+                            <tr>
+                                <td>
+                                    <strong>${paywall.name}</strong>
+                                    <div style="color: #666; font-size: 0.875rem; margin-top: 0.25rem;">
+                                        ${paywall.description.length > 80 ? paywall.description.substring(0, 80) + '...' : paywall.description}
+                                    </div>
+                                </td>
+                                <td>$${paywall.monthly_price}/month</td>
+                                <td><span class="status ${paywall.status}">${paywall.status}</span></td>
+                                <td>${new Date(paywall.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        function updateStats(paywalls) {
+            const total = paywalls.length;
+            const active = paywalls.filter(p => p.status === 'active').length;
+            
+            document.getElementById('totalPaywalls').textContent = total;
+            document.getElementById('activePaywalls').textContent = active;
+        }
+
+        // Navigation functions
+        function navigateToPage(page) {
+            // Update sidebar navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+            // Show the selected page
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+            document.getElementById(`${page}Page`).classList.add('active');
+
+            // Load data if necessary
+            if (page === 'dashboard') {
+                loadPaywalls();
+            }
+
+            currentPage = page;
+        }
+
+        // UI helper functions
+        function showApp() {
+            landingPage.style.display = 'none';
+            appLayout.classList.add('active');
+            document.getElementById('loginBtn').classList.add('hidden');
+            document.getElementById('getStartedBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+        }
+
+        function showLanding() {
+            landingPage.style.display = 'block';
+            appLayout.classList.remove('active');
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('getStartedBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+        }
+
+        function showLoginForm() {
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('loginToggle').classList.remove('hidden');
+            document.querySelector('.signup-form h3').textContent = 'Welcome Back';
+        }
+
+        function showSignupForm() {
+            document.getElementById('signupForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('loginToggle').classList.add('hidden');
+            document.querySelector('.signup-form h3').textContent = 'Get Started Today';
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('authError');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+            
+            // Hide success message if visible
+            document.getElementById('authSuccess').classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('authSuccess');
+            successEl.textContent = message;
+            successEl.classList.remove('hidden');
+            
+            // Hide error message if visible
+            document.getElementById('authError').classList.add('hidden');
+        }
+
+        function showErrorMessage(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+            
+            // Hide corresponding success message
+            const successId = elementId.replace('Error', 'Success');
+            const successEl = document.getElementById(successId);
+            if (successEl) successEl.classList.add('hidden');
+        }
+
+        function showSuccessMessage(elementId, message) {
+            const successEl = document.getElementById(elementId);
+            successEl.textContent = message;
+            successEl.classList.remove('hidden');
+            
+            // Hide corresponding error message
+            const errorId = elementId.replace('Success', 'Error');
+            const errorEl = document.getElementById(errorId);
+            if (errorEl) errorEl.classList.add('hidden');
+        }
+
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                currentUser = session.user;
+                showApp();
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                showLanding();
+            }
+        });
+    </script>
+</body>
+</html>
