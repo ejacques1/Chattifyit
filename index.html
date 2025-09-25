@@ -567,7 +567,7 @@
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.875rem;
             line-height: 1.5;
-            overflow-x: auto;
+            overflow-x: hidden;
             position: relative;
             margin-bottom: 1rem;
         }
@@ -611,6 +611,9 @@
         .code-content {
             white-space: pre-wrap;
             word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .instruction-note {
@@ -980,7 +983,7 @@
                 }
             }
         }
-        const api = new ApiClient('https://jkxgaoogdzwduebskkkf.supabase.co/functions/v1/api');
+        const api = new ApiClient(`${SUPABASE_URL}/functions/v1/api`);
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1323,25 +1326,6 @@
                         <div class="info-label">Payment Link</div>
                         <div class="paywall-url">
                             <a href="${paywall.checkout_url}" target="_blank">${paywall.checkout_url}</a>
-                        </div>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Total Subscribers</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">$0</div>
-                            <div class="stat-label">Total Revenue</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">This Month</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">0%</div>
-                            <div class="stat-label">Conversion Rate</div>
                         </div>
                     </div>
 
