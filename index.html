@@ -601,6 +601,16 @@
                 <div id="createSuccess" class="success hidden"></div>
             </div>
 
+
+            <!-- Paywall Details -->
+            <div class="page" id="paywallDetailsPage">
+                <div class="page-header">
+                    <h1 class="page-title">Paywall Details</h1>
+                    <p class="page-subtitle">View and manage your paywall</p>
+                </div>
+                
+            </div>
+
             <!-- Installation Instructions -->
             <div class="page" id="instructionsPage">
                 <div class="page-header">
@@ -662,9 +672,12 @@
 
     <script>
         // Supabase configuration
-        const SUPABASE_URL = 'https://tvmwchdjjhfuyshofylo.supabase.co'; // Replace with your actual Supabase URL
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2bXdjaGRqamhmdXlzaG9meWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2MDg5NDIsImV4cCI6MjA3NDE4NDk0Mn0.Gzompa2tlKeLrVC5Z6a1oUjU_5it52VUyrmfsWwpoO4'; // Replace with your actual anon key
-        
+        // const SUPABASE_URL = 'https://tvmwchdjjhfuyshofylo.supabase.co'; // Replace with your actual Supabase URL
+        // const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2bXdjaGRqamhmdXlzaG9meWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2MDg5NDIsImV4cCI6MjA3NDE4NDk0Mn0.Gzompa2tlKeLrVC5Z6a1oUjU_5it52VUyrmfsWwpoO4'; // Replace with your actual anon key
+        const SUPABASE_URL = 'https://jkxgaoogdzwduebskkkf.supabase.co'; // Replace with your actual Supabase URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpreGdhb29nZHp3ZHVlYnNra2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTAxNTAsImV4cCI6MjA3NDI4NjE1MH0.OSTwaWv7TDbfmNLXjTiMSDGbHOejPmOwOujEiyDBs4E'; // Replace with your actual anon key
+
+
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Global state
@@ -678,6 +691,51 @@
         const loginForm = document.getElementById('loginForm');
         const profileForm = document.getElementById('profileForm');
         const createPaywallForm = document.getElementById('createPaywallForm');
+
+        // Utilities
+        class ApiClient {
+            constructor(baseUrl) {
+                this.baseUrl = baseUrl;
+            }
+
+            async get(path) {
+                try {
+                    const response = await fetch(`${this.baseUrl}${path}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        return { data: null, error: new Error(`HTTP error! status: ${response.status}`) };
+                    }
+                    const result = await response.json();
+                    return { data: result, error: null };
+                } catch (err) {
+                    return { data: null, error: err };
+                }
+            }
+
+            async post(path, payload = {}) {
+                try {
+                    const response = await fetch(`${this.baseUrl}${path}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        return { data: null, error: new Error(`HTTP error! status: ${response.status}`) };
+                    }
+                    const result = await response.json();
+                    return { data: result, error: null };
+                } catch (err) {
+                    return { data: null, error: err };
+                }
+            }
+        }
+        const api = new ApiClient('https://jkxgaoogdzwduebskkkf.supabase.co/functions/v1/api');
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', async () => {
@@ -741,6 +799,11 @@
                 if (error) throw error;
 
                 if (data.user) {
+                    let data2, error;
+                    ({ data: data2, error } = await api.post(`/account/create`, { email, uuid: data.user.id }));
+
+                    if (error) throw error;
+
                     showSuccess('Account created successfully! Please check your email to verify your account.');
                     currentUser = data.user;
                     showApp();
@@ -809,13 +872,13 @@
                 const { data, error } = await supabase
                     .from('accounts')
                     .select('*')
-                    .eq('user_id', currentUser.id)
+                    .eq('uuid', currentUser.id)
                     .single();
 
                 if (error && error.code !== 'PGRST116') throw error;
 
                 if (data) {
-                    document.getElementById('businessName').value = data.business_name || '';
+                    document.getElementById('businessName').value = data.company_name || '';
                     document.getElementById('contactName').value = data.contact_name || '';
                     document.getElementById('businessAddress').value = data.business_address || '';
                     document.getElementById('payoutEmail').value = data.payout_email || '';
@@ -830,19 +893,18 @@
             e.preventDefault();
             
             const paywallData = {
-                user_id: currentUser.id,
                 name: document.getElementById('paywallName').value,
                 description: document.getElementById('paywallDescription').value,
-                monthly_price: parseFloat(document.getElementById('monthlyPrice').value),
-                free_trial_days: parseInt(document.getElementById('freeTrialDays').value) || 0,
-                status: 'active',
-                created_at: new Date().toISOString()
+                price: parseFloat(document.getElementById('monthlyPrice').value),
+                trial: parseInt(document.getElementById('freeTrialDays').value) || 0,
+                pricing_model: "recurring",
+                currency: "USD",
+                interval: "monthly",
             };
 
             try {
-                const { error } = await supabase
-                    .from('paywalls')
-                    .insert(paywallData);
+                let data, error;
+                ({ data, error } = await api.post(`/account/${currentUser.id}/paywall/create`, paywallData));
 
                 if (error) throw error;
 
@@ -861,11 +923,10 @@
 
         async function loadPaywalls() {
             try {
-                const { data, error } = await supabase
-                    .from('paywalls')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .order('created_at', { ascending: false });
+                // Usage in loadPaywalls
+                let data, error;
+                ({ data, error } = await api.get(`/account/${currentUser.id}/paywalls`));
+                data = data ? data.paywalls : null;
 
                 if (error) throw error;
 
@@ -907,11 +968,11 @@
                                 <td>
                                     <strong>${paywall.name}</strong>
                                     <div style="color: #666; font-size: 0.875rem; margin-top: 0.25rem;">
-                                        ${paywall.description.length > 80 ? paywall.description.substring(0, 80) + '...' : paywall.description}
+                                        ${paywall.name.length > 80 ? paywall.name.substring(0, 80) + '...' : paywall.name}
                                     </div>
                                 </td>
-                                <td>$${paywall.monthly_price}/month</td>
-                                <td><span class="status ${paywall.status}">${paywall.status}</span></td>
+                                <td>$${paywall.price}/month</td>
+                                <td><span class="status ${paywall.archived ? 'inactive' : 'active'}">${paywall.archived ? 'Inactive' : 'Active'}</span></td>
                                 <td>${new Date(paywall.created_at).toLocaleDateString()}</td>
                             </tr>
                         `).join('')}
