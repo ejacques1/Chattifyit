@@ -635,6 +635,176 @@
             margin: 0;
             font-size: 0.875rem;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #1a1a1a;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #1a1a1a;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .subscription-icon {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-body h3 {
+            color: #1a1a1a;
+            margin: 0 0 1rem 0;
+            font-size: 1.25rem;
+        }
+
+        .modal-body p {
+            color: #666;
+            margin: 0 0 2rem 0;
+            line-height: 1.6;
+        }
+
+        .subscription-benefits {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .benefit-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .benefit-icon {
+            background: #00c896;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-item span:last-child {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions .btn {
+            min-width: 160px;
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .modal-header {
+                padding: 1rem 1.5rem 0.75rem 1.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -744,27 +914,71 @@
                 <form id="profileForm">
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lasttName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
                             <label for="businessName">Business Name *</label>
                             <input type="text" id="businessName" name="businessName" required>
                         </div>
                         <div class="form-group">
-                            <label for="contactName">Contact Name *</label>
-                            <input type="text" id="contactName" name="contactName" required>
+                            <label for="displayName">Display Name *</label>
+                            <input type="text" id="displayName" name="displayName" required>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="businessAddress">Business Address *</label>
-                        <textarea class="textarea" id="businessAddress" name="businessAddress" required placeholder="Enter your complete business address"></textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="businessCountry">Country *</label>
+                            <input type="text" id="businessCountry" name="businessCountry" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessWebsite">Website *</label>
+                            <input type="text" id="businessWebsite" name="businessWebsite" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="supportEmail">Support Email *</label>
+                            <input type="text" id="supportEmail" name="supportEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessPhone">Phone Number</label>
+                            <input type="text" id="businessPhone" name="businessPhone">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="testEmail">Test Email</label>
+                            <input type="text" id="testEmail" name="testEmail" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+        
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-group">
+                        <label for="businessAddress">Business Address *</label>
+                        <textarea class="textarea" id="businessAddress" name="businessAddress" required placeholder="Enter your complete business address"></textarea>
+                    </div> -->
+
+                    <!-- <div class="form-group">
                         <label for="payoutEmail">PayPal Email for Payouts (Optional)</label>
                         <input type="email" id="payoutEmail" name="payoutEmail" placeholder="Add this anytime before your first payout">
                         <small style="color: #666; margin-top: 0.5rem; display: block;">
                             You can add your payout information later, but it's required before receiving your first payment.
                         </small>
-                    </div>
+                    </div> -->
 
                     <button type="submit" class="btn">Save Profile</button>
                 </form>
@@ -778,6 +992,10 @@
                 <div class="page-header">
                     <h1 class="page-title">Paywall Dashboard</h1>
                     <p class="page-subtitle">Manage your ChatGPT paywall subscriptions</p>
+                    <div style="float: right; margin-top: -4.5rem;" id="startSubscriptionBtnContainer">
+                        <a href="#" id="startSubscriptionBtn" target="_blank" class="btn btn-warning">Start your subscription now</a>
+                        <div id="subscriptionStatus" class="">Subscription Active</div>
+                    </div>
                 </div>
 
                 <div class="stats">
@@ -917,13 +1135,58 @@
         </main>
     </div>
 
+    <!-- Subscription Required Modal -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Subscription Required</h2>
+                <button class="modal-close" onclick="hideSubscriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="subscription-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="#00c896"/>
+                        <path d="M19 15L20.09 19.26L24 20L20.09 20.74L19 25L17.91 20.74L14 20L17.91 19.26L19 15Z" fill="#00c896"/>
+                    </svg>
+                </div>
+                <h3>Start Your Subscription to Create Paywalls</h3>
+                <p>You need an active subscription to create and manage paywalls for your ChatGPT chatbots.</p>
+                
+                <div class="subscription-benefits">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Create unlimited paywalls</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>70% revenue share to you</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Monthly payouts</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Full analytics dashboard</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <a href="#" id="subscribeNowBtn" class="btn" target="_blank">Subscribe Now - $19.99/month</a>
+                    <button class="btn btn-secondary" onclick="hideSubscriptionModal()">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Supabase configuration
         // const SUPABASE_URL = 'https://tvmwchdjjhfuyshofylo.supabase.co'; // Replace with your actual Supabase URL
         // const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2bXdjaGRqamhmdXlzaG9meWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2MDg5NDIsImV4cCI6MjA3NDE4NDk0Mn0.Gzompa2tlKeLrVC5Z6a1oUjU_5it52VUyrmfsWwpoO4'; // Replace with your actual anon key
         const SUPABASE_URL = 'https://jkxgaoogdzwduebskkkf.supabase.co'; // Replace with your actual Supabase URL
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpreGdhb29nZHp3ZHVlYnNra2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTAxNTAsImV4cCI6MjA3NDI4NjE1MH0.OSTwaWv7TDbfmNLXjTiMSDGbHOejPmOwOujEiyDBs4E'; // Replace with your actual anon key
-
+        const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_4gM28qaoS5Ck3k02m07kc00';
+'https://buy.stripe.com/test_4gM28qaoS5Ck3k02m07kc00?locked_prefilled_email=j%40j.com&client_reference_id=uuuu-0-'
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -931,6 +1194,7 @@
         let currentUser = null;
         let currentPage = 'profile';
         let currentPaywallId = null;
+        let currentAccount = null;
 
         // DOM elements
         const landingPage = document.getElementById('landingPage');
@@ -993,6 +1257,7 @@
                 currentUser = session.user;
                 showApp();
                 await loadUserProfile();
+                loadPaymentLink();
                 await loadPaywalls();
             }
 
@@ -1030,7 +1295,7 @@
             createPaywallForm.addEventListener('submit', handleCreatePaywall);
 
             // Buttons
-            document.getElementById('createPaywallBtn').addEventListener('click', () => navigateToPage('create'));
+            document.getElementById('createPaywallBtn').addEventListener('click', handleCreatePaywallClick);
             document.getElementById('cancelCreate').addEventListener('click', () => navigateToPage('dashboard'));
             document.getElementById('backToDashboard').addEventListener('click', () => navigateToPage('dashboard'));
 
@@ -1040,6 +1305,13 @@
                     e.preventDefault();
                     const paywallId = e.target.dataset.paywallId;
                     showPaywallDetails(paywallId);
+                }
+            });
+
+            // Modal close on outside click
+            document.getElementById('subscriptionModal').addEventListener('click', (e) => {
+                if (e.target.id === 'subscriptionModal') {
+                    hideSubscriptionModal();
                 }
             });
         }
@@ -1083,6 +1355,7 @@
                 currentUser = data.user;
                 showApp();
                 await loadUserProfile();
+                loadPaymentLink();
                 await loadPaywalls();
             } catch (error) {
                 showError(error.message);
@@ -1093,31 +1366,80 @@
             try {
                 await supabase.auth.signOut();
                 currentUser = null;
+                currentAccount = null;
                 showLanding();
             } catch (error) {
                 console.error('Logout error:', error);
             }
         }
 
+        // Payment functions
+
+        function handleSubscriptionCheck() {
+            if (currentAccount.subscription && currentAccount.subscription.status === 'active') {
+                document.getElementById('subscriptionStatus').innerHTML = 'Subscription Active';
+            } else {
+                document.getElementById('subscriptionStatus').innerHTML = 'Subscription Inactive';
+            }
+        }
+        
+        function displaySubscriptionModal() {
+            // Set the subscription link with user's email and ID
+            const subscribeBtn = document.getElementById('subscribeNowBtn');
+            if (subscribeBtn && currentUser) {
+                const href = `${STRIPE_PAYMENT_LINK}?prefilled_email=${currentUser.email}&client_reference_id=${currentUser.id}`;
+                subscribeBtn.href = href;
+            }
+            
+            document.getElementById('subscriptionModal').classList.add('active');
+        }
+
+        function hideSubscriptionModal() {
+            document.getElementById('subscriptionModal').classList.remove('active');
+        }
+
+        function handleCreatePaywallClick() {
+            // Check if user has active subscription
+            if (!currentAccount || !currentAccount.subscription || currentAccount.subscription.status !== 'active') {
+                displaySubscriptionModal();
+                return;
+            }
+            
+            // If subscription is active, proceed to create page
+            navigateToPage('create');
+        }
+        
+        function loadPaymentLink() {
+            if (currentAccount && currentAccount.subscription && currentAccount.subscription.status === 'active') {
+                document.getElementById('startSubscriptionBtnContainer').innerHTML = '<div id="subscriptionStatus" class="">Subscription Active</div>';
+            } else {
+                const href = `${STRIPE_PAYMENT_LINK}?prefilled_email=${currentUser.email}&client_reference_id=${currentUser.id}`;
+                document.getElementById('startSubscriptionBtnContainer').innerHTML = `<a href="${href}" id="startSubscriptionBtn" target="_blank" class="btn btn-warning">Start your subscription now</a><div id="subscriptionStatus" class="">Subscription Inactive</div>`;
+            }
+        }
+        
         // Profile functions
         async function handleProfileSubmit(e) {
             e.preventDefault();
             
             const profileData = {
-                user_id: currentUser.id,
-                business_name: document.getElementById('businessName').value,
-                contact_name: document.getElementById('contactName').value,
-                business_address: document.getElementById('businessAddress').value,
-                payout_email: document.getElementById('payoutEmail').value || null
+                company_name: document.getElementById('businessName').value,
+                company_display_name: document.getElementById('displayName').value,
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                country: document.getElementById('businessCountry').value,
+                website: document.getElementById('businessWebsite').value,
+                support_email: document.getElementById('supportEmail').value || null,
+                phone_number: document.getElementById('businessPhone').value || null,
             };
 
             try {
-                const { error } = await supabase
-                    .from('accounts')
-                    .upsert(profileData);
+                const { data, error } = await api.post(`/account/${currentUser.id}/update`, profileData);
 
                 if (error) throw error;
 
+                loadUserProfile();
+                
                 showSuccessMessage('profileSuccess', 'Profile saved successfully!');
             } catch (error) {
                 showErrorMessage('profileError', error.message);
@@ -1126,19 +1448,21 @@
 
         async function loadUserProfile() {
             try {
-                const { data, error } = await supabase
-                    .from('accounts')
-                    .select('*')
-                    .eq('uuid', currentUser.id)
-                    .single();
+                const { data, error } = await api.get(`/account/${currentUser.id}`);
 
-                if (error && error.code !== 'PGRST116') throw error;
+                if (error) throw error;
 
-                if (data) {
-                    document.getElementById('businessName').value = data.company_name || '';
-                    document.getElementById('contactName').value = data.contact_name || '';
-                    document.getElementById('businessAddress').value = data.business_address || '';
-                    document.getElementById('payoutEmail').value = data.payout_email || '';
+                if (data.account) {
+                    currentAccount = data.account;
+                    document.getElementById('businessName').value = data.account.company_name || '';
+                    document.getElementById('firstName').value = data.account.first_name || '';
+                    document.getElementById('lastName').value = data.account.last_name || '';
+                    document.getElementById('displayName').value = data.account.company_display_name || '';
+                    document.getElementById('businessWebsite').value = data.account.website || '';
+                    document.getElementById('businessPhone').value = data.account.phone_number || '';
+                    document.getElementById('businessCountry').value = data.account.country || '';
+                    document.getElementById('supportEmail').value = data.account.support_email || '';
+                    document.getElementById('testEmail').value = data.account.test_email || '';
                 }
             } catch (error) {
                 console.error('Error loading profile:', error);
@@ -1203,7 +1527,7 @@
                     <div style="text-align: center; padding: 3rem; color: #666;">
                         <h3>No paywalls created yet</h3>
                         <p>Create your first paywall to start monetizing your ChatGPT chatbots!</p>
-                        <button class="btn" onclick="navigateToPage('create')" style="margin-top: 1rem;">Create Your First Paywall</button>
+                        <button class="btn" onclick="handleCreatePaywallClick()" style="margin-top: 1rem;">Create Your First Paywall</button>
                     </div>
                 `;
                 return;
@@ -1217,6 +1541,7 @@
                             <th>Price</th>
                             <th>Status</th>
                             <th>Created Date</th>
+                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1231,6 +1556,7 @@
                                 <td>$${paywall.price}/month</td>
                                 <td><span class="status ${paywall.archived ? 'inactive' : 'active'}">${paywall.archived ? 'Inactive' : 'Active'}</span></td>
                                 <td>${new Date(paywall.created_at).toLocaleDateString()}</td>
+                                <td><strong><a href="#" class="paywall-link" data-paywall-id="${paywall.id}" style="color: #00c896; text-decoration: none;">View Details</a></strong></td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -1329,13 +1655,6 @@
                         </div>
                     </div>
 
-                    <div class="action-buttons">
-                        <button class="btn" onclick="editPaywall('${paywall.id}')">Edit Paywall</button>
-                        <button class="btn btn-warning" onclick="togglePaywallStatus('${paywall.id}', ${paywall.archived})">
-                            ${paywall.archived ? 'Activate' : 'Archive'} Paywall
-                        </button>
-                        <button class="btn btn-secondary" onclick="navigateToPage('dashboard')">Back to Dashboard</button>
-                    </div>
                 </div>
 
                 <div class="paywall-instructions">
@@ -1609,6 +1928,7 @@ Your subscription gives you unlimited access to specialized knowledge and respon
                 showApp();
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
+                currentAccount = null;
                 showLanding();
             }
         });
