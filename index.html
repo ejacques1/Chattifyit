@@ -1613,6 +1613,25 @@
             const content = document.getElementById('paywallDetailsContent');
             
             content.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${paywall.stats.total_subscriptions}</div>
+                        <div class="stat-label">Total Subscribers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${paywall.stats.active_subscriptions}</div>
+                        <div class="stat-label">Active Subscribers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$${paywall.stats.total_revenue}</div>
+                        <div class="stat-label">Monthly Revenue</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$${paywall.stats.payout_total}</div>
+                        <div class="stat-label">Monthly Payout</div>
+                    </div>
+                </div>
+
                 <div class="paywall-info">
                     <h3>${paywall.name}</h3>
                     <p style="color: #666; margin-bottom: 1.5rem;">${paywall.description || 'No description provided'}</p>
@@ -1656,7 +1675,7 @@
                     </div>
 
                 </div>
-
+                
                 <div class="paywall-instructions">
                     <h3 style="color: #00c896; margin-bottom: 2rem; text-align: center;">ChatGPT Integration Instructions</h3>
                     <div id="instructionsContent">
